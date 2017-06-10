@@ -27,6 +27,12 @@ function setDetailsFromThumb(thumbnail) {
   setDetails(imageFromThumb(thumbnail), titleFromThumb(thumbnail));
 }
 
+function setRandomImageUrl(thumb) {
+  "use strict";
+  var randomImageUrl = 'img/otter4.jpg';
+  thumb.setAttribute('data-image-url', randomImageUrl);
+}
+
 function addThumbClickHandler(thumb) {
   "use strict";
   thumb.addEventListener('click', function (event) {
@@ -44,6 +50,7 @@ function getThumbnails() {
 function initializeEvents() {
   "use strict";
   var thumbnails = getThumbnails();
+  thumbnails.forEach(setRandomImageUrl);
   thumbnails.forEach(addThumbClickHandler);
 }
 
