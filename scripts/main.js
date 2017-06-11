@@ -2,6 +2,10 @@
 var detailImageSelector = '[data-image-role="target"]';
 var detailTitleSelector = '[data-image-role="title"]';
 var thumbnailLinkSelector = '[data-image-role="trigger"]';
+var detailFrameSelector = '[data-image-role="frame"]';
+var hiddenDetailClass = 'hidden-detail';
+var tinyEffectClass = 'is-tiny';
+var escKey = 27;
 
 function setDetails(imageUrl, title) {
   'use strict';
@@ -10,6 +14,7 @@ function setDetails(imageUrl, title) {
 
   var detailTitle = document.querySelector(detailTitleSelector);
   detailTitle.textContent = title;
+
 }
 
 function imageFromThumb(thumbnail) {
@@ -32,6 +37,7 @@ function addThumbClickHandler(thumb) {
   thumb.addEventListener('click', function (event) {
     event.preventDefault();
     setDetailsFromThumb(thumb);
+    showDetails()
   })
 }
 
@@ -41,10 +47,37 @@ function getThumbnails() {
   return [].slice.call(thumbnails);
 }
 
+function showDetails() {
+  "use strict";
+  var frame = document.querySelector(detailFrameSelector);
+  document.body.classList.remove(hiddenDetailClass);
+  frame.classList.add(tinyEffectClass);
+  setTimeout(function () {
+    frame.classList.remove(tinyEffectClass);
+  }, 50);
+}
+
+function hideDetails() {
+  "use strict";
+  document.body.classList.add(hiddenDetailClass);
+}
+
 function initializeEvents() {
   "use strict";
   var thumbnails = getThumbnails();
   thumbnails.forEach(addThumbClickHandler);
+  addKeyPressHandler()
+}
+
+function addKeyPressHandler() {
+  "use strict";
+  document.body.addEventListener('keyup', function (event) {
+    event.preventDefault();
+    console.log(event.keyCode);
+    if (event.keyCode === escKey) {
+      hideDetails();
+    }
+  })
 }
 
 initializeEvents();
