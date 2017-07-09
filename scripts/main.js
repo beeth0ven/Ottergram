@@ -1,4 +1,3 @@
-
 var detailImageSelector = '[data-image-role="target"]';
 var detailTitleSelector = '[data-image-role="title"]';
 var thumbnailLinkSelector = '[data-image-role="trigger"]';
@@ -6,6 +5,8 @@ var detailFrameSelector = '[data-image-role="frame"]';
 var hiddenDetailClass = 'hidden-detail';
 var tinyEffectClass = 'is-tiny';
 var escKey = 27;
+var $ = window.jQuery;
+var Rx = window.Rx;
 
 function setDetails(imageUrl, title) {
   'use strict';
@@ -32,15 +33,6 @@ function setDetailsFromThumb(thumbnail) {
   setDetails(imageFromThumb(thumbnail), titleFromThumb(thumbnail));
 }
 
-function addThumbClickHandler(thumb) {
-  "use strict";
-  thumb.addEventListener('click', function (event) {
-    event.preventDefault();
-    setDetailsFromThumb(thumb);
-    showDetails()
-  })
-}
-
 function getThumbnails() {
   "use strict";
   var thumbnails = document.querySelectorAll(thumbnailLinkSelector);
@@ -62,22 +54,33 @@ function hideDetails() {
   document.body.classList.add(hiddenDetailClass);
 }
 
-function initializeEvents() {
-  "use strict";
+
+function setupRx() {
+
   var thumbnails = getThumbnails();
-  thumbnails.forEach(addThumbClickHandler);
-  addKeyPressHandler()
+
+  Rx.Observable.from(thumbnails)
+    .flatMap(function (thumb) {
+      return $(thumb).clickAsObservable()
+        .map(function (value) {
+          return thumb;
+        });
+    })
+    .subscribe(function (thumb) {
+      event.preventDefault();
+      setDetailsFromThumb(thumb);
+      showDetails();
+      console.log('value: ' + thumb);
+    });
+
+  Rx.Observable.fromEvent($(document.body),'keyup')
+    .subscribe(function (event) {
+      event.preventDefault();
+      console.log(event.keyCode);
+      if (event.keyCode === escKey) {
+        hideDetails();
+      }
+    })
 }
 
-function addKeyPressHandler() {
-  "use strict";
-  document.body.addEventListener('keyup', function (event) {
-    event.preventDefault();
-    console.log(event.keyCode);
-    if (event.keyCode === escKey) {
-      hideDetails();
-    }
-  })
-}
-
-initializeEvents();
+setupRx();
